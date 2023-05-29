@@ -7,7 +7,7 @@ import Products from "./components/Shop/Products";
 
 import Notification from "./components/UI/Notification";
 
-import { sendCartData } from "./store/cart-slice";
+import { sendCartData, fetchCartData } from "./store/cart-actions";
 
 let isInittial = true;
 
@@ -17,6 +17,10 @@ function App() {
     const showCart = useSelector((state) => state.ui.cartIsVisible);
     const cart = useSelector((state) => state.cart);
     const notification = useSelector((state) => state.ui.notification);
+
+    useEffect(() => {
+        dispatch(fetchCartData());
+    }, [dispatch]);
 
     useEffect(() => {
         // ---- A way of running async code inside useEffect ---- //
@@ -67,8 +71,10 @@ function App() {
             return;
         }
 
-        // --- Using thunk to run async code --- //
-        dispatch(sendCartData(cart));
+        if (cart.changed) {
+            // --- Using thunk to run async code --- //
+            dispatch(sendCartData(cart));
+        }
 
     }, [cart, dispatch]);
 
